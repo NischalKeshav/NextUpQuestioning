@@ -2,10 +2,6 @@ const { WebSocketServer } = require('ws');
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
 
-/**
- * In-memory store of questions for the session.
- * Each item: { id, name, text, createdAt }
- */
 const questions = [];
 
 function broadcastJson(wss, data) {
@@ -22,7 +18,6 @@ const wss = new WebSocketServer({ port: PORT });
 wss.on('connection', (ws) => {
   console.log('[ws] client connected, total clients:', wss.clients.size);
   
-  // Send history on connect (minimal feature for receivers)
   ws.send(
     JSON.stringify({ type: 'history', data: questions })
   );
@@ -32,14 +27,14 @@ wss.on('connection', (ws) => {
     try {
       parsed = JSON.parse(message.toString());
     } catch {
-      return; // ignore non-JSON
+      return; 
     }
 
     if (parsed && parsed.type === 'question') {
       const name = typeof parsed.name === 'string' ? parsed.name.trim() : '';
       const text = typeof parsed.text === 'string' ? parsed.text.trim() : '';
 
-      if (!name || !text) return; // minimal validation
+      if (!name || !text) return; 
 
       const item = {
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),

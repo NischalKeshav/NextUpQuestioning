@@ -8,9 +8,8 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "ws": "^8.18.0",
-    "firebase": "^10.14.1"
+    "dotenv": "^17.2.3",
+    "firebase": "^10.14.1",
+    "ws": "^8.18.0"
   }
 }
-
-

@@ -1,0 +1,15 @@
+{
+  "name": "nextup-questioning-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal WebSocket relay for question sender/receiver",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
+
+

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questions</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+	<header class="app-header">
+		<h1>Incoming Questions</h1>
+		<div id="status" class="status">Connecting...</div>
+	</header>
+	<main class="app-main">
+		<ul id="list" class="list"></ul>
+		<div id="empty" class="empty">No questions yet.</div>
+	</main>
+
+	<script>
+	(function() {
+		var listEl = document.getElementById('list');
+		var emptyEl = document.getElementById('empty');
+		var statusEl = document.getElementById('status');
+		var ws = new WebSocket('ws://localhost:8080');
+
+		function addItem(item) {
+			var li = document.createElement('li');
+			li.className = 'card';
+			var name = document.createElement('div');
+			name.className = 'name';
+			name.textContent = item.name;
+			var text = document.createElement('div');
+			text.className = 'text';
+			text.textContent = item.text;
+			li.appendChild(name);
+			li.appendChild(text);
+			listEl.appendChild(li);
+			emptyEl.style.display = 'none';
+		}
+
+		ws.addEventListener('open', function() {
+			statusEl.textContent = 'Connected';
+			statusEl.style.color = '#299ebf';
+		});
+
+		ws.addEventListener('close', function() {
+			statusEl.textContent = 'Disconnected';
+			statusEl.style.color = '#d9534f';
+		});
+
+		ws.addEventListener('error', function() {
+			statusEl.textContent = 'Connection error';
+			statusEl.style.color = '#d9534f';
+		});
+
+		ws.addEventListener('message', function(ev) {
+			try {
+				var msg = JSON.parse(ev.data);
+				console.log('Received:', msg);
+				if (msg.type === 'history' && Array.isArray(msg.data)) {
+					if (msg.data.length === 0) {
+						emptyEl.style.display = '';
+					} else {
+						emptyEl.style.display = 'none';
+						msg.data.forEach(addItem);
+					}
+				}
+				if (msg.type === 'question' && msg.data) {
+					addItem(msg.data);
+				}
+			} catch (e) {
+				console.error('Error parsing message:', e);
+			}
+		});
+	})();
+	</script>
+</body>
+</html>
